@@ -1,0 +1,204 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+/*
+Implemente as funções prototipadas a seguir.
+Procure utilizar os métodos da classe string
+*/
+
+
+/// Codigos erro parser
+enum pjsonErr_t {JS_OK=0, ///< sucesso
+                 JS_NID,  ///< id desconhecido
+                 JS_NT};  ///< tipo de dado incompativel
+
+/**
+Prototipos funcoes micro Parser
+*/
+
+/**
+@brief encontra variavel id na msg e retorna com seu valor inteiro
+@param string no formato json
+@param identificador da variável a ser buscada
+@param varivel para retornar valor
+@return resultado da execução
+    S_OK
+    JS_NID - id nao foi encontrado
+    JS_NT  - valor encontrado nao corresponde ao tipo esperado
+
+    string msg recebe o texto completo
+    string id recebe o nome da variavel q tem q achar
+    int &var onde vai ficar o valor encontrado
+*/
+pjsonErr_t encontra(string msg, string id, int &var) {
+    int pos_id = msg.find(id);
+    //find vai procurar o texto que ta em id, e diz em qual posicao o texto comeca
+    //ai vai guardar essa info em pos id
+
+    if (pos_id == string::npos) {
+    //se o find nao achou o id
+        return JS_NID;
+    }
+
+    int valor_inicio = msg.find(":", pos_id + id.length());
+    //find procura oq vem dps de :
+    //e procura depois do id q ja foi achado
+
+    if (valor_inicio == string::npos){
+    //se nao achou nada
+        return JS_NT;
+    }
+
+    int valor_fim = msg.find(",", valor_inicio + 1);
+    //tenta achar a , que normalmente é oq tem no final do valor
+    if (valor_fim == string::npos) {
+        valor_fim = msg.find("}", valor_inicio + 1);
+        //se nao achou, ele procura um } q tb pode informar o final do valor
+    }
+    if (valor_fim == string::npos){
+        return JS_NT;
+    }
+
+    //msg.substr(onde_comeca, quantos_caracteres) corta um pedaço de ums string
+    string str_valor = msg.substr(valor_inicio + 1, valor_fim - (valor_inicio + 1));
+    //pega oq ta depois do :(+1) e antes do , ou }
+
+    var = stoi(str_valor);
+    //string to integer
+    //transforma para um int
+
+    return JS_OK;
+}
+
+/**
+
+@brief encontra variavel id na msg e retorna com seu valor string
+@param string no formato json
+@param identificador da variável a ser buscada
+@param varivel para retornar valor
+@return resultado da execução
+    S_OK
+    JS_NID - id nao foi encontrado
+    JS_NT  - valor encontrado nao corresponde ao tipo esperado
+*/
+pjsonErr_t encontra(string msg, string id, string &var) {
+    int pos_id = msg.find(id);
+    //procura o texto q ta em id
+
+    if (pos_id == string::npos) {
+        return JS_NID;
+    }
+
+    int valor_inicio = msg.find(":", pos_id + id.length());
+    //procura oq vem depois de :
+    if (valor_inicio == string::npos){
+            return JS_NT;
+    }
+
+    int aspas_inicio = msg.find("\"", valor_inicio + 1);
+    //procura a primeira aspa depois do inicio do valor
+    //importante ter o \ pra ele procurar as aspas e nao o final da string
+
+    if (aspas_inicio == string::npos){
+        return JS_NT;
+    }
+
+    int aspas_fim = msg.find("\"", aspas_inicio + 1);
+    //procura a aspa q fecha o valor
+    if (aspas_fim == string::npos){
+            return JS_NT;
+    }
+    //               onde comeca        quantos caracteres
+    var = msg.substr(aspas_inicio + 1, aspas_fim - (aspas_inicio + 1));
+    //               logo dps da aspa
+
+    return JS_OK;
+}
+
+
+/**
+@brief encontra variavel id na msg e retorna com seu valor float
+@param string no formato json
+@param identificador da variável a ser buscada
+@param varivel para retornar valor
+@return resultado da execução
+    S_OK
+    JS_NID - id nao foi encontrado
+    JS_NT  - valor encontrado nao corresponde ao tipo esperado
+*/
+pjsonErr_t encontra(string msg, string id, float &var) {
+    int pos_id = msg.find(id);
+    //procura o texto q ta em id
+
+    if (pos_id == string::npos) {
+    //se n achar
+        return JS_NID;
+    }
+
+    int valor_inicio = msg.find(":", pos_id + id.length());
+    //procura oq vem depois das aspas
+
+    if (valor_inicio == string::npos){
+            return JS_NT;
+    }
+
+    int valor_fim = msg.find(",", valor_inicio + 1);
+    //procura o , q normalmente significa o fim do valor
+
+    if (valor_fim == string::npos) {
+        valor_fim = msg.find("}", valor_inicio + 1);
+    //se n achar procura } q tb pode significar o fim do valor
+    }
+
+    if (valor_fim == string::npos){
+            return JS_NT;
+    }
+
+    string str_valor = msg.substr(valor_inicio + 1, valor_fim - (valor_inicio + 1));
+
+    var = stof(str_valor);
+
+    return JS_OK;
+
+}
+/*
+Implemente um código de teste para as funções descritas acima
+Crie outras variáveis em formato json
+
+*/
+
+int main() {
+    string msgJson = "{\"nome\":\"Ze\", \"idade\": 34,\"peso\":78.5 }";
+    string id;
+    string texto;
+    int inteiro;
+    float real;
+
+    cout << "Mensagem json: " << msgJson << endl;
+
+    cout << "Qual das informacoes voce deseja: ";
+    cin >> id;
+
+    // tenta como string
+    if (encontra(msgJson, id, texto) == JS_OK) {
+        cout << "O valor (string) de " << id << " eh: " << texto << endl;
+        return 0;
+    }
+
+    // tenta como int
+    if (encontra(msgJson, id, inteiro) == JS_OK) {
+        cout << "O valor (inteiro) de " << id << " eh: " << inteiro << endl;
+        return 0;
+    }
+
+    // tenta como float
+    if (encontra(msgJson, id, real) == JS_OK) {
+        cout << "O valor (float) de " << id << " eh: " << real << endl;
+        return 0;
+    }
+
+    cout << "erro!informacao inexistente" << endl;
+    return 0;
+}
