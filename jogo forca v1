@@ -1,0 +1,122 @@
+/**
+    Jogo da Forca
+
+    Desenvolver o jogo da forca, partindo de uma palavra escolhida
+    aleatóriamente da ListaSecreta
+
+*/
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <string>
+#include <cctype>
+
+using namespace std;
+
+#define NPAL 10 ///< Quantidade de palavras na lista secreta
+
+/// Lista de palavras secretas
+const string ListaSecreta[NPAL]={"abobora","glacial","flor","gelo","caneta",
+                                 "armario","laranjeira","teclado","oceano","volei"};
+
+int main()
+{
+  /// Inicializando gerador de numeros aleatórios
+  std::srand(std::time(NULL));
+  // pra sortear palavra diferente
+
+  /// sorteando valor entre [0 e NPAL[
+  int sorteio = rand() % NPAL;
+  //sorteio recebe um indice aleatorio entre 0 e NPAL-1
+
+  string palavra = ListaSecreta[sorteio];
+
+int tam = (int) palavra.size();
+
+  //cria a string mascarada com underlines
+  string secreta = "";
+  for (int i = 0; i < tam; i++) {
+    secreta += '_';
+  }
+
+int tentativas = 0; //conta quantos palpites ja foram feitos
+int maxTentativas = 10;
+string letrasTentadas = ""; //letras q ja foram chutadas
+bool ganhou = false; // flag pra indicar se o jogador descobriu a palavra
+int contadorDeCoisas = 0;
+
+
+  //loop principal do jogo
+  while ((tentativas < maxTentativas) && (secreta != palavra)) {
+    cout << "palavra: " << secreta << "  (tamanho: " << tam << ")" << endl;
+    //mostra a palavra mascarada e o tamanho
+
+    cout << "tentativas restantes: " << (maxTentativas - contadorDeCoisas) << "\n";
+    //mostra quantas tentativas ainda aparecem como disponiveis
+
+    cout << "letras ja tentadas: ";
+    for (int i = 0; i < (int) letrasTentadas.size(); i++) {
+      cout << letrasTentadas[i] << ' ';
+    }
+    cout << "\n";
+
+    cout << "digite uma letra: ";
+    string entrada;
+    cin >> entrada;
+    //le a entrada do usuario (uma letra)
+
+
+    //se o jogador chutou uma letra
+    char letra = tolower((unsigned char) entrada[0]);
+    //tolower e pra n ter diferenca de maiusculo minusculo
+
+    bool jaTentou = false;
+    for (int i = 0; i < (int) letrasTentadas.size(); i++) {
+      if (letrasTentadas[i] == letra) {
+        jaTentou = true;
+        break;
+      }
+    }
+    //verifica se a letra ja foi tentada antes
+
+    if (jaTentou) {
+      cout << "voce ja tentou essa letra! tenta outra.\n";
+    } else {
+      letrasTentadas += letra;
+      //registra a nova letra tentada
+
+      bool acertouLetra = false;
+      for (int i = 0; i < tam; i++) {
+        if (tolower((unsigned char) palavra[i]) == letra) {
+          secreta[i] = palavra[i]; //revela a letra correta
+          acertouLetra = true;
+        }
+        //converte o caractere da palavra secreta pra minusculo aqui pra comparar com a letra digitada
+      }
+
+
+      if (acertouLetra) {
+        cout << "boa! tem essa letra na palavra.\n";
+      } else {
+        cout << "nao tem essa letra :(\n";
+      }
+
+      tentativas++; //incrementa o numero de palpites realizados
+
+      contadorDeCoisas++;
+      //atualiza a variavel auxiliar usada para mostrar tentativas
+    }
+
+
+  }
+
+  if (secreta == palavra) {
+    cout << "\nparabens, voce ganhou! a palavra era: " << palavra << "\n";
+  } else {
+    cout << "\nahh, voce perdeu... a palavra era: " << palavra << "\n";
+  }
+
+  cout << "fim do jogo. obg por jogar!\n";
+//c:
+  return 0;
+}
