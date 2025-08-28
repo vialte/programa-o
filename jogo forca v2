@@ -1,0 +1,112 @@
+/**
+    Jogo da Forca
+
+
+    Desenvolver o jogo da forca, partindo de uma palavra escolhida
+    aleatóriamente da ListaSecreta
+
+*/
+/*
+Desenvolver o jogo da forca, partindo de uma palavra escolhida aleatóriamente da ListaSecreta
+*/
+
+#include <climits>   // biblioteca de limites de inteiros (nem vai usar muito)
+#include <cstdlib>   // biblioteca pra funções de aleatório
+#include <ctime>     // biblioteca pra pegar o tempo do pc (seed do rand)
+#include <iostream>  // biblioteca pra entrada e saída
+#include <string>    // biblioteca pra usar string
+
+using namespace std;
+
+#define NPAL 10 ///< quantidade de palavras na lista secreta
+
+/// lista de palavras secretas
+const string ListaSecreta[NPAL] = {
+    "abobora","glacial","flor","gelo","caneta",
+    "armario","laranjeira","teclado","oceano","volei"
+};
+
+int main() {
+
+    srand(time(NULL)); 
+    
+    int sorteio = rand() % NPAL; 
+
+    string palavra = ListaSecreta[sorteio]; 
+    //escolhe a palavra da lista pelo numero sorteado
+
+    int tamanhoDaPalavra = palavra.size();
+    //pega o tamanho da palavra sorteada
+
+    string palavraComMascara; //string que vai mostrar a palavra escondida
+    int cont = 0;
+    while(cont < tamanhoDaPalavra){ 
+        palavraComMascara += "_";   
+        cont++; 
+    }
+
+    int tentativas = 0, maximoDeTentativas = 10; 
+    char letra; 
+    string letrasJaArriscadas; 
+    bool jaDigitouLetra = false; 
+    bool acertouLetra = false;  
+
+    //loop principal do jogo
+    while(palavra != palavraComMascara && maximoDeTentativas - tentativas > 0){
+    //enquanto a palavra n for acertada e as tentativas nao acabarem
+    
+        system("CLS"); 
+
+        cout << "Palavra: " << palavraComMascara << " (Tamanho: " << tamanhoDaPalavra << ")";
+        cout << "\nTentativas restantes: " << maximoDeTentativas - tentativas;
+
+        cout << "\nLetras usadas: "; //mostra as letras que já foram digitadas
+        for(cont = 0; cont < letrasJaArriscadas.size(); cont++){
+            cout << letrasJaArriscadas[cont] << " "; //imprime cada letra que ja tentou
+        }
+
+        cout << "\nDigite uma letra: "; 
+        cin >> letra; 
+
+        for(cont = 0; cont < letrasJaArriscadas.size(); cont++){ 
+            if(letrasJaArriscadas[cont] == letra){ //confere se já foi usada
+                cout << "Essa letra ja foi digitada!\n";
+                jaDigitouLetra = true; 
+            }
+        }
+
+        if(jaDigitouLetra == false){ 
+            letrasJaArriscadas += tolower(letra); 
+            acertouLetra = false; 
+
+            for(cont = 0; cont < tamanhoDaPalavra; cont++){ 
+                if(palavra[cont] == tolower(letra)){ 
+                    palavraComMascara[cont] = palavra[cont]; //revela a letra na mascara
+                    acertouLetra = true; //marca que acertou
+                }
+            }
+
+            if(acertouLetra == false){ 
+                cout << "Voce errou uma letra!\n"; 
+            }else{
+                cout << "Voce acertou uma letra!\n"; 
+
+            tentativas++; 
+        }
+
+        jaDigitouLetra = false; //reseta variavel pra proxima rodada
+        acertouLetra = false;   
+    }
+
+    system("CLS");
+
+    if(palavra == palavraComMascara){ //se acertou tudo
+        cout << "Parabens, voce venceu! A palavra era: " << palavra;
+    }else{ //se passou das tentativas
+        cout << "Voce perdeu! A palavra era: " << palavra;
+    }
+
+    return 0; 
+    9
+    
+}
