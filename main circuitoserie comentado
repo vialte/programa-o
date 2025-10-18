@@ -1,0 +1,60 @@
+#include <iostream>
+
+//definem as classes dos componentes
+#include "Resistor.h"
+#include "fonteDC.h"
+
+///o que eu consigo fazer em c++ que nao faco em c
+//em c o operador funciona sempre do mesmo jeito, mas em c++ ele muda dependendo do obj
+//posso sobrecarregar funcoes- ter duas com o mesmo nome, mas parametros diferentes
+//pra fazer entrada e saida de objetos, no c eu usava funcoes
+
+///pra que vou usar objetos?
+//reaproveitamento,encapsulamento(obj contem todas as caracteristicas dele)
+//objeto controla sua acessibilidade, e se "gerencia"
+
+using namespace std;
+
+int main()
+{
+    cout << "Circuito serie" << endl;
+
+    Resistor R1;//cria o r1
+    cout << "Primeiro valor de R1 = " << R1.r() << " ohms\n";
+    R1.r(3300);
+    //a funcao r() ta sendo usada como setter, que muda o valor interno
+
+    Resistor R2(2200);//cria o r2 e ja atribiu o valor
+    //construtor ja recebe um valor de resistencia
+
+    fonteDC Vf(12);//cria a fonte de tensao
+
+    //mostra os valores iniciais
+    cout << "R1 = " << R1.r() << " ohms\n";
+    cout << "R2 = " << R2.r() << " ohms\n";
+    cout << "Vf = " << Vf.V() << " V" << endl;
+
+    double i;//variavel da corrente
+
+    //loop vai rodar 20 vezes pra simular o comportamento do circuito
+    //foi um numero chutado, mas poderia ser tipo roda ate
+    //os numeros variarem pouco pra exibir o valor final
+    for(int n=0;n<20;n++)
+    {
+    //vf.v- le a tensao da fonte(12v)
+    //r2.v- le a tensao atual sobre o r2
+    //vf.v-r2.v- sobra a tensao q cai sobre o r1
+    //r1.i-lei de ohm
+    i=R1.i(Vf.V()-R2.V());
+
+    //o v(i) usa a corrente calculada pra achar a nova tensao do r2
+    //vr2= r2.i
+    R2.V(i);
+
+    cout << "i = " << i << "   Vout = " << R2.V()<< endl;
+    }
+
+
+
+    return 0;
+}
